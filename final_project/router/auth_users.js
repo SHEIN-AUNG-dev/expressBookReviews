@@ -56,8 +56,21 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
+   const review = req.query.review;
+   const rating = req.query.rating;
+   const isbn = req.params.isbn;
+   const username =req.session.authorization.username;
+   if (books[isbn].reviews.username == username)
+   {
+    return res.send("edit review");
+   }
+   else{
+    books[isbn].reviews = {"review":review , "rating":rating ,"username":username};
+   }
+   
+   
   
-  return res.send("hello");
+  return res.send("review added");
   
 });
 
