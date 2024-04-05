@@ -60,18 +60,40 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
    const rating = req.query.rating;
    const isbn = req.params.isbn;
    const username =req.session.authorization.username;
-   if (books[isbn].reviews.username == username)
+  
+   //try to find book
+   try {
+    const book = books[isbn];
+    const newReview = {
+        username: username,
+        review: review,
+        rating: rating
+      };
+    if(book){
+       
+            book.reviews[username]=newReview;
+            return res.send("Review added");
+        }
+    else {
+        return res.send("book not found");
+    }
+   }
+ 
+   catch(error)
    {
-    return res.send("edit review");
-   }
-   else{
-    books[isbn].reviews = {"review":review , "rating":rating ,"username":username};
+    return res.status(500).send("Server Error!");
    }
    
    
-  
-  return res.send("review added");
-  
+});
+regd_users.delete("/auth/review/:isbn",(req,res)=>{
+    const username =req.session.authorization.username;
+    const isbn = req.params.isbn;
+    const book = books[isbn];
+    book.reviews[username]={};
+
+    return res.send('Successfully deleted');
+
 });
 
 module.exports.authenticated = regd_users;
