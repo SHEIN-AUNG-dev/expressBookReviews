@@ -21,52 +21,112 @@ public_users.post("/register", (req,res) => {
   return res.status(404).json({message: "Unable to register user."});
 });
 
-// Get the book list available in the shop
-public_users.get('/',function (req, res) {
-  //Write your code here
+// Get the book list available in the shop (Task 10)
+public_users.get('/', function (req, res) {
+    let myPromise = new Promise((resolve, reject) => {
+      try {
+        // Prepare the JSON string
+        let bookData = JSON.stringify(books, null, 4);
+        resolve(bookData);
+      } catch (error) {
+        reject(error);  // Reject with any errors during stringification
+      }
+    })
+    .then((bookData) => {
+      res.send(bookData);
+    })
+    .catch((error) => {
+        //logs error message
+      console.error("Error sending book list:", error);
+    });
+  });
 
-  return res.send(JSON.stringify(books,null,4));
-});
-
-// Get book details based on ISBN
+// Get book details based on ISBN (Task 11)
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
-  const isbn = req.params.isbn;
-
-  return res.send(books[isbn]);
+  let myPromise = new Promise ((resolve,reject)=>
+  {
+    try {
+        //prepare requested book
+        const isbn = req.params.isbn;
+        let myBook = books[isbn];
+        resolve (myBook);
+    }
+    catch(error){
+        reject (error); //reject with error if the book is not found
+    }
+  })
+  .then ((myBook)=>{
+    res.send(myBook);
+  })
+  .catch((error)=>
+  {
+    console.error("Error Finding the Book", error);
+  });
+  
  });
   
-// Get book details based on author
+// Get book details based on author (Task 12)
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
-  const myauthor = req.params.author;
-  var myBooks = Object.values(books);
-  const filtered_books=myBooks.filter((book)=>book.author==myauthor)
-  if (filtered_books.length>0)
-  {
-    return res.send(filtered_books);
-  }
-  else{
-    return res.send("No book found by this author");
-  }
-  
-  
-  
+    let myPromise = new Promise ((resolve,reject)=>{
+        try {
+            const myauthor = req.params.author;
+            var myBooks = Object.values(books);
+            const filtered_books=myBooks.filter((book)=>book.author==myauthor)
+            resolve(filtered_books);
+        }
+        catch(error){
+            reject(error);//return error if the book is not found
+
+        }
+    })
+    .then((filtered_books)=>
+    {
+        if (filtered_books.length>0)
+        {
+          res.send(filtered_books);
+        }
+        else{
+          res.send("No book found by this author");
+        }
+    })
+    .catch((error)=>{
+        console.error("invalid request",error);
+    })
+
+
+
 });
 
-// Get all books based on title
+// Get all books based on title (task 13)
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  const myTitle = req.params.title;
-  var myBooks = Object.values(books);
-  const filtered_books=myBooks.filter((book)=>book.title==myTitle)
-  if (filtered_books.length>0)
-  {
-    return res.send(filtered_books);
-  }
-  else{
-    return res.send("No book found by this author");
-  }
+let myPromise = new Promise ((resolve,reject)=>{
+    try {
+        const myTitle = req.params.title;
+        var myBooks = Object.values(books);
+        const filtered_books=myBooks.filter((book)=>book.title==myTitle)//filtered with requested title
+        resolve (filtered_books);
+    }
+    catch(error){
+        reject(error)//reject with error if invalid input
+    }
+})
+.then((filtered_books)=>{
+    if (filtered_books.length>0){
+        res.send(filtered_books);
+    }
+    else{
+        res.send("Book with the given title not found");
+    }
+    
+})
+.catch((error)=>{
+    console.error("Invalid title given",error);
+})
+
+
  
 });
 
