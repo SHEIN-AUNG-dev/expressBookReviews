@@ -72,7 +72,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     if(book){
        
             book.reviews[username]=newReview;
-            return res.send("Review added");
+            return res.send("Review for the book with ISBN :"+isbn+"has been added");
         }
     else {
         return res.send("book not found");
@@ -92,7 +92,7 @@ regd_users.delete("/auth/review/:isbn",(req,res)=>{
     const isbn = req.params.isbn;
     delete books[isbn].reviews[username];
 
-    return res.send('Successfully deleted');
+    return res.send("Review for the book with ISBN :"+isbn+ "has been deleted");
 
 });
 
